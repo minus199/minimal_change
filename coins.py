@@ -1,16 +1,14 @@
-# Usage
+# 
 '''
-{
-    'cent': 0.01,
-    'quarter': 0.25,
-    'fittyCents': 0.5,
-    'dollah': 1,
-    'fiver': 5,
-    'tenner': 10,
-    'fifty': 50
-}
+Usage: 
+    python3 coins.py \
+        -d fifty_shekel:50 ten_shekel:10 five_shekel:5 shekel:1 half_shekel:0.5 quarter_shekel:0.25 agora:0.01 \
+        -n ILS -a 1234.455 -s ₪
 '''
-# python3 coins.py -d fifty:50 tenner:10 fiver:5 dollah:1 fittyCents:0.5 quarter:0.25 cent:0.01 -n dollahBillYall -a 1234.455 -s @!
+
+
+
+
 from app_config import boot, flow
 from functools import reduce
 import logging
@@ -21,7 +19,7 @@ import sys
 
 
 SANITY_WARNING_FORMAT = "Warning - Unable to match coins for remaining amount of {1}{0}. Suggesting to use {1}{2}. If you do so, you'll lose additional {1}{3}"
-SEGMENT_EXTRACT_FORMAT = "- Remaining amount is {target_amount} after using {num_denom_units} * {current_denom}s which is {denom_symbol}{used_amount} {denom_name}"
+SEGMENT_EXTRACT_FORMAT = "- Remaining {denom_symbol}{target_amount}, used {num_denom_units} * {current_denom}s which is {denom_symbol}{used_amount}{denom_name}"
 
 
 def extract_segment(denominations, denom_symbol, denom_name, current_denom, target_amount=0):
@@ -64,9 +62,9 @@ def do_sanity(denom_symbol, denom_name, segments, inital_target_amount, denomina
     if is_remaining_unpayable:
         format_args = round(sanity_delta, 4), denom_symbol, smallest_denom, round(
             smallest_denom - sanity_delta, 3)
-        print(SANITY_WARNING_FORMAT.format(*format_args))
+        logging.warn(SANITY_WARNING_FORMAT.format(*format_args))
     else:
-        print("Computation successful!")
+        logging.info("Computation successful!")
 
     return {
         'sanity_check': sanity_check,
