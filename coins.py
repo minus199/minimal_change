@@ -25,17 +25,18 @@ def extract_segment(denominations, denom_symbol, denom_name, current_denom, targ
         'denom_name': denom_name
     }
 
-def compute_change(denom_symbol, denom_name, denominations, inital_target_amount=12271.314):
-    sorted_denominations = sorted(
-        denominations, key=denominations.__getitem__, reverse=True)
+def compute_change(denom_symbol, denom_name, denominations, inital_target_amount):
+    logging.info("Minimal change will be computed according to %s%s" % (denom_symbol, inital_target_amount))
+    sorted_denominations = sorted(denominations, key=denominations.__getitem__, reverse=True)
     segments = list()
+    denom_symbol, denom_name = (denom_symbol.strip(), denom_name.strip())
+
     for current_denom in sorted_denominations:
         remaining_amount = segments[-1]['target_amount'] if segments else inital_target_amount
-        segment = extract_segment(denominations, denom_symbol.strip(
-        ), denom_name.strip(), current_denom, remaining_amount)
+        segment = extract_segment(denominations, denom_symbol, denom_name, current_denom, remaining_amount)
 
         if segment:  # i.e. currency denom matched and extracted
             segments.append(segment)
-            logging.warn(flow['SEGMENT_EXTRACT_FORMAT'].format(**segment))
+            logging.info(flow['SEGMENT_EXTRACT_FORMAT'].format(**segment))
 
     return segments
